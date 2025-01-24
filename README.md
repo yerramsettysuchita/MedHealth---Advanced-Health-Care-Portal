@@ -1,6 +1,5 @@
 # 🏥 MedHealth - Advanced Healthcare Portal 🌟
 
-**Developed during the Medicore Hackathon**  
 MedHealth is an innovative web application that bridges the gap between patients and healthcare professionals, offering a seamless experience for managing health data, appointments, and analytics.
 
 ---
