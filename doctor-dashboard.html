@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedHealth Pro - Doctor's Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #009688;
+            --secondary-color: #4CAF50;
+            --accent-color: #FFC107;
+            --background-color: #E0F7FA;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            scroll-behavior: smooth;
+        }
+
+        .sidebar {
+            background-color: var(--primary-color);
+            color: #fff;
+            width: 250px;
+            height: 100vh;
+            padding: 1rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .sidebar a {
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            margin: 1rem 0;
+            font-weight: bold;
+        }
+
+        .dashboard-container {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .section-container {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+            margin-top: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+
+        .chart-container {
+            height: 300px;
+        }
+
+        .calendar-container {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            height: 350px;
+        }
+
+        .dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            animation: fadeOut 3s forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <h2 class="text-2xl font-bold mb-4">MedHealth Pro</h2>
+        <a href="#dashboard" class="hover:text-cyan-400 transition">Dashboard</a>
+        <a href="#patients-demographics" class="hover:text-cyan-400 transition">Patients</a>
+        <a href="#reports" class="hover:text-cyan-400 transition">Reports</a>
+        <a href="#health-tips" class="hover:text-cyan-400 transition">Health Tips</a>
+        <a href="#food-tips" class="hover:text-cyan-400 transition">Food Tips</a>
+        <a href="#interactive-calendar" class="hover:text-cyan-400 transition">Calendar</a>
+        <a href="#new-appointment" class="hover:text-cyan-400 transition">Schedule Appointment</a>
+        <button id="theme-toggle" class="btn mt-4 text-white">Toggle Dark Mode</button>
+    </div>
+
+    <!-- Main Dashboard Content -->
+    <div class="dashboard-container">
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section-container">
+            <h2 class="section-title">Dashboard</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="stats-card text-center">
+                    <h3 class="text-green-500 text-xl font-semibold">Total Patients</h3>
+                    <p class="text-4xl font-bold">150+</p>
+                </div>
+                <div class="stats-card text-center">
+                    <h3 class="text-green-400 text-xl font-semibold">New Patients</h3>
+                    <p class="text-4xl font-bold">20+</p>
+                </div>
+                <div class="stats-card text-center">
+                    <h3 class="text-yellow-500 text-xl font-semibold">Total Appointments</h3>
+                    <p class="text-4xl font-bold">70+</p>
+                </div>
+                <div class="stats-card text-center">
+                    <h3 class="text-teal-400 text-xl font-semibold">Appointment Requests</h3>
+                    <p class="text-4xl font-bold">15+</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Patients Demographics Section -->
+        <section id="patients-demographics" class="section-container">
+            <h3 class="section-title">Patients Demographics & Statistics</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="chart-container">
+                    <canvas id="patientDemographicsChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="patientStatsChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reports Section -->
+        <section id="reports" class="section-container">
+            <h3 class="section-title">Reports</h3>
+            <ul>
+                <li>📄 Patient Summary Report</li>
+                <li>📄 Appointment Analysis</li>
+                <li>📄 Critical Cases Summary</li>
+            </ul>
+        </section>
+
+        <!-- Health Tips Section -->
+        <section id="health-tips" class="section-container">
+            <h3 class="section-title">Health Tips</h3>
+            <div id="carousel" class="flex overflow-x-auto space-x-4">
+                <div class="p-4 bg-green-100 rounded">💡 Stay hydrated daily!</div>
+                <div class="p-4 bg-green-100 rounded">💡 Include more fruits in your diet!</div>
+                <div class="p-4 bg-green-100 rounded">💡 Exercise at least 30 minutes a day!</div>
+            </div>
+        </section>
+
+        <!-- Food Tips Section -->
+        <section id="food-tips" class="section-container">
+            <h3 class="section-title">Food Tips</h3>
+            <ul>
+                <li>🥗 Add leafy greens to every meal.</li>
+                <li>🍎 Snack on fresh fruits instead of processed food.</li>
+                <li>🥜 Include nuts and seeds for healthy fats.</li>
+            </ul>
+        </section>
+
+        <!-- Interactive Calendar Section -->
+        <section id="interactive-calendar" class="section-container">
+            <h3 class="section-title">Calendar</h3>
+            <div id="calendar" class="calendar-container"></div>
+        </section>
+
+        <!-- New Appointment Form -->
+        <section id="new-appointment" class="section-container">
+            <h4 class="section-title">Schedule New Appointment</h4>
+            <form id="appointmentForm">
+                <label for="appointmentTitle" class="block text-gray-700">Appointment Title:</label>
+                <input type="text" id="appointmentTitle" required class="input-field">
+                <label for="appointmentDate" class="block text-gray-700 mt-2">Appointment Date:</label>
+                <input type="date" id="appointmentDate" required class="input-field">
+                <button type="submit" class="btn mt-4">Add Appointment</button>
+            </form>
+        </section>
+
+    </div>
+    
+    <script>
+        // FullCalendar Initialization
+        document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                height: 'auto',
+                events: [
+                    { title: 'Appointment with Dr. Smith', start: '2024-11-15', color: 'red' },
+                    { title: 'Follow-up', start: '2024-11-22', color: 'green' }
+                ],
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,dayGridWeek'
+                }
+            });
+            calendar.render();
+        });
+
+        // Dark Mode Toggle
+        document.getElementById('theme-toggle').addEventListener('click', function () {
+            document.body.classList.toggle('dark-mode');
+        });
+
+        // Patient Statistics Chart
+        const patientStatsCtx = document.getElementById('patientStatsChart').getContext('2d');
+        new Chart(patientStatsCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Patients',
+                    data: [50, 70, 120, 190, 150, 280],
+                    borderColor: 'rgba(78, 115, 223, 1)',
+                    backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                }]
+            }
+        });
+
+        // Patient Demographics Chart
+        const patientDemographicsCtx = document.getElementById('patientDemographicsChart').getContext('2d');
+        new Chart(patientDemographicsCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['18-30yrs', '31-50yrs', '51-65yrs', '>65yrs'],
+                datasets: [{
+                    data: [40, 30, 20, 10],
+                    backgroundColor: ['#4CAF50', '#FF9800', '#FFC107', '#F44336']
+                }]
+            }
+        });
+
+        // Toast Notification
+        const showToast = (message) => {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        };
+
+        // New Appointment Form
+        document.getElementById('appointmentForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const title = document.getElementById('appointmentTitle').value;
+            const date = document.getElementById('appointmentDate').value;
+
+            if (title && date) {
+                showToast('Appointment Added Successfully!');
+                window.location.href = '#interactive-calendar'; // Redirect to calendar section
+            } else {
+                showToast('Please fill all fields!');
+            }
+        });
+    </script>
+</body>
+</html>

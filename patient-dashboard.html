@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedHealth - Patient Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --gradient-start: #1E293B;
+            --gradient-middle: #334155;
+            --gradient-end: #475569;
+        }
+
+        .professional-bg {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-middle), var(--gradient-end));
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .chart-container {
+            height: 200px;
+            position: relative;
+            margin-top: 20px;
+        }
+
+        .high-contrast {
+            filter: contrast(200%);
+        }
+    </style>
+</head>
+<body class="professional-bg min-h-screen text-gray-100">
+    <div id="canvas-container"></div>
+
+    <!-- Navigation -->
+    <nav class="bg-gray-900/80 backdrop-blur-md fixed w-full z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <span class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                    MedHealth Patient Portal
+                </span>
+                <div class="flex items-center space-x-6">
+                    <a href="#dashboard" class="hover:text-cyan-400 transition">Dashboard</a>
+                    <a href="#appointments" class="hover:text-cyan-400 transition">Appointments</a>
+                    <a href="#health-history" class="hover:text-cyan-400 transition">Health History</a>
+                    <a href="#analytics" class="hover:text-cyan-400 transition">Analytics</a>
+                    <a href="#chatbot" class="hover:text-cyan-400 transition">Chatbot</a>
+                </div>
+                <button id="logoutBtn" class="px-4 py-2 bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 pt-24 pb-12">
+        <!-- Dashboard -->
+        <section id="dashboard" class="mb-12">
+            <h2 class="text-3xl font-bold mb-8">Welcome Back, John Doe</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="glass-card p-6 rounded-xl stat-card">
+                    <h3 class="text-cyan-400 text-lg mb-2">Next Appointment</h3>
+                    <p class="text-4xl font-bold">25th Oct</p>
+                    <p class="text-sm text-gray-400">Cardiologist</p>
+                </div>
+                <div class="glass-card p-6 rounded-xl stat-card">
+                    <h3 class="text-cyan-400 text-lg mb-2">Medications</h3>
+                    <p class="text-4xl font-bold">3</p>
+                    <p class="text-sm text-gray-400">Prescribed medications</p>
+                </div>
+                <div class="glass-card p-6 rounded-xl stat-card">
+                    <h3 class="text-cyan-400 text-lg mb-2">Pending Lab Results</h3>
+                    <p class="text-4xl font-bold">2</p>
+                    <p class="text-sm text-gray-400">Due in 24hrs</p>
+                </div>
+                <div class="glass-card p-6 rounded-xl stat-card">
+                    <h3 class="text-cyan-400 text-lg mb-2">Health Score</h3>
+                    <p class="text-4xl font-bold">85%</p>
+                    <p class="text-sm text-gray-400">Based on recent reports</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Real-Time Health Monitoring -->
+        <section id="real-time-health" class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">Real-Time Health Metrics</h2>
+            <div class="glass-card p-6 rounded-xl">
+                <h3 class="text-cyan-400 text-lg mb-4">Sync Your Smartwatch</h3>
+                <p class="text-gray-300">Monitor your vitals in real-time. Check your heart rate, blood pressure, and oxygen levels directly on your portal.</p>
+                <div class="chart-container">
+                    <canvas id="heartRateChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Appointments Section -->
+        <section id="appointments" class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">Your Appointments</h2>
+            <div class="glass-card rounded-xl p-6">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="text-left border-b border-gray-700">
+                                <th class="pb-4">Date</th>
+                                <th class="pb-4">Doctor</th>
+                                <th class="pb-4">Status</th>
+                                <th class="pb-4">Type</th>
+                                <th class="pb-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-gray-800">
+                                <td class="py-4">Oct 25, 2024</td>
+                                <td class="py-4">Dr. Sarah Gupta</td>
+                                <td class="py-4"><span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">Confirmed</span></td>
+                                <td class="py-4">Cardiology</td>
+                                <td class="py-4">
+                                    <button class="px-4 py-2 bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition">Join Video Call</button>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-800">
+                                <td class="py-4">Nov 3, 2024</td>
+                                <td class="py-4">Dr. Prabhash Kumar</td>
+                                <td class="py-4"><span class="px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-sm">Pending</span></td>
+                                <td class="py-4">Routine Checkup</td>
+                                <td class="py-4">
+                                    <button class="px-4 py-2 bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition">Reschedule</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Health History Section -->
+        <section id="health-history" class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">Health History</h2>
+            <div class="patient-grid">
+                <div class="glass-card rounded-xl p-6">
+                    <h3 class="text-xl font-semibold mb-4">Last Visit</h3>
+                    <p class="text-sm">Date: 12th Oct 2024</p>
+                    <p class="text-sm">Doctor: Dr. Sanjay Kumar</p>
+                    <p class="text-sm">Treatment: Hypertension</p>
+                    <button class="mt-4 px-4 py-2 w-full bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition">View Report</button>
+                </div>
+                <div class="glass-card rounded-xl p-6">
+                    <h3 class="text-xl font-semibold mb-4">Previous Checkup</h3>
+                    <p class="text-sm">Date: 30th Sep 2024</p>
+                    <p class="text-sm">Doctor: Dr. Prajapati</p>
+                    <p class="text-sm">Treatment: Nutrition Consultation</p>
+                    <button class="mt-4 px-4 py-2 w-full bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition">View Report</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Personalized Health Recommendations -->
+        <section id="health-tips" class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">Personalized Health Recommendations</h2>
+            <div class="glass-card p-6 rounded-xl">
+                <h3 class="text-cyan-400 text-lg mb-4">Recommended for You</h3>
+                <p class="text-gray-300">Based on your recent checkup, we recommend incorporating more omega-3 fatty acids into your diet for heart health.</p>
+            </div>
+        </section>
+
+        <!-- Gamified Health Insights -->
+        <section id="gamified-health" class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">Your Health Progress</h2>
+            <div class="glass-card p-6 rounded-xl">
+                <h3 class="text-cyan-400 text-lg mb-4">Today's Exercise</h3>
+                <p>You've completed 80% of your daily step goal!</p>
+                <progress class="w-full" value="80" max="100">80%</progress>
+            </div>
+        </section>
+
+        <!-- Analytics Section -->
+        <section id="analytics" class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">Health Analytics</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-card rounded-xl p-6">
+                    <h3 class="text-xl font-semibold mb-4">Blood Pressure Trends</h3>
+                    <div class="h-64 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-lg">
+                        <canvas id="bloodPressureChart"></canvas>
+                    </div>
+                </div>
+                <div class="glass-card rounded-xl p-6">
+                    <h3 class="text-xl font-semibold mb-4">Weight Progress</h3>
+                    <div class="h-64 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg">
+                        <canvas id="weightProgressChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chatbot Section -->
+        <section id="chatbot" class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">MedHealth AI Chatbot</h2>
+            <div class="glass-card p-6 rounded-xl">
+                <h3 class="text-cyan-400 text-lg mb-4">Ask Me Anything!</h3>
+                <p class="text-gray-300">Get instant answers to your questions. Type below and I'll assist you with your medical queries.</p>
+                <input type="text" placeholder="Type your message..." class="w-full p-2 rounded-lg text-gray-700 mt-4">
+                <button class="mt-4 px-4 py-2 w-full bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition">Send</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Emergency Contact Button -->
+    <button class="fixed bottom-4 left-4 bg-red-600 text-white p-4 rounded-full shadow-lg">
+        Emergency Contact
+    </button>
+
+    <!-- Logout Script -->
+    <script>
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            // Clear any session-related data (like tokens) from localStorage
+            localStorage.removeItem('userToken'); // Assuming you are storing the user's token
+
+            // Redirect to login page
+            window.location.href = 'auth.html'; // Replace 'auth.html' with your login page's path
+        });
+    </script>
+
+    <!-- Three.js Background Animation -->
+    <script>
+        // Initialize Three.js scene
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Create animated background particles
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 1000;
+        const posArray = new Float32Array(particlesCount * 3);
+
+        for(let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 5;
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.005,
+            color: 0x4AADEF
+        });
+
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        camera.position.z = 3;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            particlesMesh.rotation.y += 0.001;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+
+    <!-- Chart.js Example: Real-time Heart Rate -->
+    <script>
+        const ctx = document.getElementById('heartRateChart').getContext('2d');
+        const heartRateChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['10:00 AM', '10:15 AM', '10:30 AM', '10:45 AM', '11:00 AM'],
+                datasets: [{
+                    label: 'Heart Rate (bpm)',
+                    data: [72, 75, 80, 76, 78],
+                    borderColor: '#4AADEF',
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
