@@ -68,6 +68,7 @@ Key Files:
 4. HealthAlert.js: AI health alert system logic.
 5. package.json: Project dependencies.
 
+
 🤝 Acknowledgments
 Grateful for the Medicore Hackathon platform and the team effort behind MedHealth. Special thanks to the organizers and mentors for their guidance. 🙌
 
