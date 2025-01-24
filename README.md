@@ -59,10 +59,6 @@ MedHealth is an innovative web application that bridges the gap between patients
    npm start
 5. Open http://localhost:3000 in your browser.
 
-### Theoretical Description (350 Characters)
-
-Participated in the **Medicore Hackathon** and developed **MedHealth**, an advanced healthcare portal. Features include patient and doctor dashboards, real-time health monitoring, AI-powered health alerts, appointment scheduling, analytics, and a smart chatbot. Built with React, TailwindCSS, Chart.js, and Three.js for a seamless experience. 🌟💻
-
 ## 📚 Learn More
 ### Key Files:
 - `auth.html`: Authentication and role management.
